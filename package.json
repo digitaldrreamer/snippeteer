@@ -36,11 +36,14 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"bits-ui": "^0.21.15",
 		"clsx": "^2.1.1",
 		"mode-watcher": "^0.4.1",
 		"preline": "^2.4.1",
+		"svelte-persisted-store": "^0.11.0",
 		"svelte-sonner": "^0.3.28",
 		"tailwind-merge": "^2.5.2",
-		"tailwind-variants": "^0.2.1"
+		"tailwind-variants": "^0.2.1",
+		"typescript-to-js": "^1.0.194"
 	}
 }
