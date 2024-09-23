@@ -121,8 +121,8 @@
 						href="#">Snippets</a
 					>
 
-					<Button class="my-2 ml-4">
-						Options
+					<Button class="my-2 ml-4 px-4 py-1">
+						More
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"

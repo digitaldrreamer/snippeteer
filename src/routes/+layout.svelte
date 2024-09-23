@@ -5,6 +5,7 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import * as Menubar from '$lib/components/ui/menubar/index.js';
 	import { Kbd } from 'flowbite-svelte';
+	import { browser } from '$app/environment';
 
 	let bookmarks = false;
 	let fullUrls = true;

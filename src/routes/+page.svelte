@@ -1,3 +1,6 @@
+<svelte:head>
+	<title>Snippeteer - Open-source code sharing platform</title>
+</svelte:head>
 <!-- Hero -->
 <div class="relative overflow-hidden">
 	<!-- Gradients -->

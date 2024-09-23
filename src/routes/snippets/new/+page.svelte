@@ -171,6 +171,9 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Create a new snippet | Snippeteer - Open-source code-sharing platform</title>
+</svelte:head>
 <div
 	class="block h-[100svh] space-y-4 px-4 py-4 leading-10 sm:grid sm:grid-flow-col sm:grid-rows-3 sm:gap-4 sm:space-y-0"
 >
