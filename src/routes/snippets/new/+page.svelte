@@ -11,14 +11,62 @@
 
 	let defaultTheme = 'githubLight';
 
-	if (data && data.id) {
-	}
+	$: tailwind_config = JSON.parse(tailwind_config_json);
+
+	let tailwind_config_json = `{
+    "theme": {
+      "extend": {
+        "colors": {
+            "primary": {
+                "50": "#fffdea",
+                "100": "#fff7c5",
+                "200": "#fff085",
+                "300": "#ffe146",
+                "400": "#ffcf1b",
+                "500": "#ffae00",
+                "600": "#e28400",
+                "700": "#bb5c02",
+                "800": "#984708",
+                "900": "#7c3a0b",
+                "950": "#481d00"
+            },
+            "secondary": {
+                "50": "#fff1f3",
+                "100": "#ffe4e7",
+                "200": "#fecdd5",
+                "300": "#fca5b4",
+                "400": "#fa728c",
+                "500": "#f24167",
+                "600": "#d11d4d",
+                "700": "#bc1445",
+                "800": "#9e1341",
+                "900": "#87143c",
+                "950": "#4b061c"
+            }
+        }
+      }
+    }
+  }
+`;
+
+	const isValidJSON = (str) => {
+		try {
+			JSON.parse(str);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	};
 
 	/**
 	 * @type {string[]}
 	 */
 	let cdns = {
-		tailwind: `<script src="https://cdn.tailwindcss.com"><\/script>`,
+		tailwind: `<script src="https://cdn.tailwindcss.com"><\/script>
+            <script>
+                tailwind.config = ${isValidJSON(tailwind_config_json) ? tailwind_config : {}}
+                <\/script>
+            `,
 		bootstrap: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous" />
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" \/>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" \/>
@@ -42,7 +90,7 @@
 	};
 
 	function insertCssJsIntoHtml(htmlz, cssz, jsz) {
-        // update localstorage value
+		// update localstorage value
 		$settings.temp.html = html || '';
 		$settings.temp.css = css || '';
 		$settings.temp.js = js || '';
@@ -127,11 +175,13 @@
 	class="block h-[100svh] space-y-4 px-4 py-4 leading-10 sm:grid sm:grid-flow-col sm:grid-rows-3 sm:gap-4 sm:space-y-0"
 >
 	<div
-		class="block h-[60vh] w-full rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-3 sm:row-span-3 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
+		class="no-scrollbar block h-[60vh] w-full overflow-scroll rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-3 sm:row-span-3 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
 	>
 		<Tabs.Root value="html" class="h-full w-full border border-dashed">
 			<Tabs.List
-				class="grid w-full grid-cols-3 space-x-3 bg-slate-200 text-neutral-900 dark:bg-slate-900"
+				class="sticky top-0 z-10 grid w-full transition-all {selectedLibs.tailwind
+					? 'grid-cols-4'
+					: 'grid-cols-3'} space-x-3 bg-slate-200 text-neutral-900 dark:bg-slate-900"
 			>
 				<Tabs.Trigger class="space-x-1 align-middle" value="html">
 					<span> HTML5 </span>
@@ -162,20 +212,34 @@
 						class="size-4"
 					/>
 				</Tabs.Trigger>
+				{#if selectedLibs.tailwind}
+					<Tabs.Trigger class="space-x-1 align-middle" value="tailwind">
+						<img
+							loading="eager"
+							src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+							class="size-4"
+							alt="tailwind logo"
+						/>
+						<span> tailwind.config.js </span>
+					</Tabs.Trigger>
+				{/if}
 			</Tabs.List>
 			<Tabs.Content value="html">
-				<Editor bind:value={html} lang="html" theme={defaultTheme} />
+				<Editor bind:value={html} lang="html" />
 			</Tabs.Content>
 			<Tabs.Content value="css">
-				<Editor bind:value={css} lang="css" theme={defaultTheme} />
+				<Editor bind:value={css} lang="css" />
 			</Tabs.Content>
 			<Tabs.Content value="js">
-				<Editor bind:value={js} lang="javascript" theme={defaultTheme} />
+				<Editor bind:value={js} lang="javascript" />
+			</Tabs.Content>
+			<Tabs.Content value="tailwind">
+				<Editor bind:value={tailwind_config_json} lang="json" />
 			</Tabs.Content>
 		</Tabs.Root>
 	</div>
 	<div
-		class="block h-[20vh] w-full overflow-scroll rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
+		class="no-scrollbar block h-[20vh] w-full overflow-scroll rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
 	>
 		<p class="mb-4 font-semibold text-gray-900 dark:text-white">Libraries</p>
 		<ul

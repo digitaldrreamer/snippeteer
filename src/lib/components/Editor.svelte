@@ -1,8 +1,9 @@
 <script>
 	import CodeMirror from 'svelte-codemirror-editor';
-	import { javascript } from '@codemirror/lang-javascript';
+	import { autoCloseTags, javascript } from '@codemirror/lang-javascript';
 	import { html } from '@codemirror/lang-html';
 	import { css } from '@codemirror/lang-css';
+	import { json } from '@codemirror/lang-json';
 	import { toast } from 'svelte-sonner';
 	import { materialLight } from '@ddietr/codemirror-themes/material-light';
 	import { materialDark } from '@ddietr/codemirror-themes/material-dark';
@@ -31,10 +32,9 @@
 		tokyoNightDay
 	];
 	let defTheme = $settings.editorTheme;
-	export let theme;
 
 	/**
-	 * @type {'html' | 'css' | 'js' | 'javascript'}
+	 * @type {'html' | 'css' | 'js' | 'javascript' | 'json'}
 	 */
 	export let lang = 'html';
 	let langs =
@@ -44,7 +44,9 @@
 				? css()
 				: lang === 'js' || lang === 'javascript'
 					? javascript()
-					: null;
+					: lang === 'json'
+						? json()
+						: null;
 	export let value = '';
 </script>
 
