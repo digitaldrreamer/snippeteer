@@ -11,7 +11,7 @@
 	</div>
 	<!-- End Gradients -->
 
-	<div class="relative z-10">
+	<div class="z-9 relative">
 		<div class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
 			<div class="mx-auto max-w-2xl text-center">
 				<p

@@ -1,5 +1,126 @@
 <script>
+	import Editor from '$lib/components/Editor.svelte';
+	import Iframe from '$lib/components/Iframe.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { settings } from '$lib/stores/settings.js';
+	import { Checkbox } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
+	import { persisted } from 'svelte-persisted-store';
+	// src="https://cdn.tailwindcss.com"
+	export let data;
+
+	let defaultTheme = 'githubLight';
+
+	if (data && data.id) {
+	}
+
+	/**
+	 * @type {string[]}
+	 */
+	let cdns = {
+		tailwind: `<script src="https://cdn.tailwindcss.com"><\/script>`,
+		bootstrap: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" \/>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" \/>
+        `,
+		foundation: `<link
+				rel="stylesheet"
+				href="https://cdn.jsdelivr.net/npm/foundation-sites@6.8.1/dist/css/foundation.min.css"
+				crossorigin="anonymous"
+			\/>
+			<script
+				src="https://cdn.jsdelivr.net/npm/foundation-sites@6.8.1/dist/js/foundation.min.js"
+				crossorigin="anonymous"
+			><\/script>`,
+		css_skeleton: `
+<link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.7/dist/css-skeletons.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.7/dist/css-skeletons.min.css"/>`,
+		bulma: `<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+>`
+	};
+
+	function insertCssJsIntoHtml(htmlz, cssz, jsz) {
+        // update localstorage value
+		$settings.temp.html = html || '';
+		$settings.temp.css = css || '';
+		$settings.temp.js = js || '';
+		$settings.temp.libs.tailwind = selectedLibs.tailwind || false;
+		$settings.temp.libs.bootstrap = selectedLibs.bootstrap || false;
+		$settings.temp.libs.foundation = selectedLibs.foundation || false;
+		$settings.temp.libs.css_skeletons = selectedLibs.css_skeletons || false;
+		$settings.temp.libs.bulma = selectedLibs.bulma || false;
+
+		// Create a style tag for CSS
+		const styleTag = `<style>${cssz}</style>`;
+
+		// Create a script tag for JS
+		const scriptTag = `<script>${jsz}<\/script>`;
+
+		// Inject the style and script tags into the HTML
+		// Assuming you want to inject the CSS inside the <head> and the JS at the end of <body>
+		let modifiedHtml = htmlz;
+
+		// Insert selected library CDNs into the head
+		const libraries = Object.entries(selectedLibs)
+			.filter(([lib, isSelected]) => isSelected) // Filter the selected libraries
+			.map(([lib]) => cdns[lib]) // Map the selected libraries to their CDN links
+			.join('\n'); // Join them into a single string
+
+		// Check if <head> tag exists to inject CDNs and CSS
+		if (modifiedHtml.includes('</head>')) {
+			modifiedHtml = modifiedHtml.replace('</head>', `${libraries}\n${styleTag}</head>`);
+		} else {
+			// If no <head>, just add the CDNs and style before the body
+			modifiedHtml = `${libraries}\n${styleTag}\n${modifiedHtml}`;
+		}
+
+		// Check if <body> tag exists to inject JS
+		if (modifiedHtml.includes('</body>')) {
+			modifiedHtml = modifiedHtml.replace('</body>', `${scriptTag}</body>`);
+		} else {
+			// If no <body>, append the script at the end
+			modifiedHtml += `\n${scriptTag}`;
+		}
+
+		return modifiedHtml;
+	}
+
+	$: code = selectedLibs ? insertCssJsIntoHtml(html, css, js).trim() : '';
+
+	let html = '';
+	let css = '';
+	let js = '';
+
+	/**
+	 * @type {{
+	 * 	tailwind: boolean;
+	 * 	bootstrap: boolean;
+	 * 	foundation: boolean;
+	 * 	css_skeletons: boolean;
+	 * 	bulma: boolean;
+	 * }}
+	 */
+	let selectedLibs = {
+		tailwind: false,
+		bootstrap: false,
+		foundation: false,
+		css_skeletons: false,
+		bulma: false
+	};
+
+	onMount(() => {
+		html = $settings.temp.html || '';
+		css = $settings.temp.css || '';
+		js = $settings.temp.js || '';
+		selectedLibs.tailwind = $settings.temp.libs.tailwind || false;
+		selectedLibs.bootstrap = $settings.temp.libs.bootstrap || false;
+		selectedLibs.foundation = $settings.temp.libs.foundation || false;
+		selectedLibs.css_skeletons = $settings.temp.libs.css_skeletons || false;
+		selectedLibs.bulma = $settings.temp.libs.bulma || false;
+		defaultTheme = $settings.editorTheme || 'githubLight';
+	});
 </script>
 
 <div
@@ -42,20 +163,40 @@
 					/>
 				</Tabs.Trigger>
 			</Tabs.List>
-			<Tabs.Content value="html">Make changes to your account here.</Tabs.Content>
-			<Tabs.Content value="css">Change your password here.</Tabs.Content>
-			<Tabs.Content value="js">Make changes to your account here.</Tabs.Content>
+			<Tabs.Content value="html">
+				<Editor bind:value={html} lang="html" theme={defaultTheme} />
+			</Tabs.Content>
+			<Tabs.Content value="css">
+				<Editor bind:value={css} lang="css" theme={defaultTheme} />
+			</Tabs.Content>
+			<Tabs.Content value="js">
+				<Editor bind:value={js} lang="javascript" theme={defaultTheme} />
+			</Tabs.Content>
 		</Tabs.Root>
 	</div>
 	<div
-		class="block h-[20vh] w-full rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
+		class="block h-[20vh] w-full overflow-scroll rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
 	>
-		&nbsp;
+		<p class="mb-4 font-semibold text-gray-900 dark:text-white">Libraries</p>
+		<ul
+			class="w-48 divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800"
+		>
+			<li><Checkbox class="p-3" bind:checked={selectedLibs.tailwind}>TailwindCSS</Checkbox></li>
+			<li><Checkbox class="p-3" bind:checked={selectedLibs.bootstrap}>Bootstrap</Checkbox></li>
+			<li><Checkbox class="p-3" bind:checked={selectedLibs.foundation}>Foundation</Checkbox></li>
+
+			<li>
+				<Checkbox class="p-3" bind:checked={selectedLibs.css_skeletons}>CSS Skeletons</Checkbox>
+			</li>
+			<li><Checkbox class="p-3" bind:checked={selectedLibs.bulma}>Bulma</Checkbox></li>
+
+			<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.7/dist/css-skeletons.min.css"/> -->
+		</ul>
 	</div>
 	<div
-		class="block h-[60vh] w-full rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:row-span-2 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
+		class="no-scrollbar block h-[60vh] w-full rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:row-span-2 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
 	>
-		&nbsp;
+		<Iframe bind:htmlContent={code} />
 	</div>
 </div>
 
