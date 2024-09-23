@@ -118,7 +118,7 @@
 
 					<a
 						class="font-medium text-gray-600 hover:text-gray-400 focus:text-gray-400 focus:outline-none sm:p-2 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500"
-						href="#">Snippets</a
+						href="/snippets">Snippets</a
 					>
 
 					<Button class="my-2 ml-4 px-4 py-1">
