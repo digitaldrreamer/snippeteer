@@ -1,4 +1,5 @@
-# Snippeteer
+# Snippeteer ![GitHub forks](https://img.shields.io/github/forks/digitaldrreamer/snippeteer)
+
 
 Snippeteer is an open-source platform for sharing, collaborating on, and challenging yourself with code snippets and HTML projects. It's designed to be easily deployed on Vercel and provides a user-friendly interface for developers to showcase their work, learn from others, and participate in coding challenges.
 
