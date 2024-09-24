@@ -9,9 +9,11 @@
 		Dropdown,
 		DropdownItem,
 		DropdownDivider,
-		Button
+		Button,
+		Checkbox
 	} from 'flowbite-svelte';
 	import { page } from '$app/stores';
+	import { Switch } from '$lib/components/ui/switch/index.js';
 	$: activeUrl = $page.url.pathname;
 
 	export let loggedIn = false;
@@ -19,19 +21,28 @@
 	import { settings } from '$lib/stores/settings';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import ModeSwitcher from './ModeSwitcher.svelte';
 	let selectedTheme = $settings.editorTheme;
 	let themes = [
-		{ value: 'materialLight', name: 'Material Light' },
-		{ value: 'materialDark', name: 'Material Dark' },
-		{ value: 'solarizedLight', name: 'Solarized Light' },
-		{ value: 'solarizedDark', name: 'Solarized Dark' },
-		{ value: 'dracula', name: 'Dracula' },
-		{ value: 'githubLight', name: 'Github Light' },
-		{ value: 'githubDark', name: 'Github Dark' },
-		{ value: 'aura', name: 'Aura' },
-		{ value: 'tokyoNight', name: 'Tokyo Night' },
-		{ value: 'tokyoNightStorm', name: 'Tokyo Night Storm' },
-		{ value: 'tokyoNightDay', name: 'Tokyo Night Day' }
+		{ value: 0, name: 'Basic Light (Light)' },
+		{ value: 1, name: 'Basic Dark (Dark)' },
+		{ value: 2, name: 'Abcdef (Light)' },
+		{ value: 3, name: 'Abyss (Dark)' },
+		{ value: 4, name: 'Android Studio (Light)' },
+		{ value: 5, name: 'Andromeda (Dark)' },
+		{ value: 6, name: 'Forest (Dark)' },
+		{ value: 7, name: 'Github Light (Light)' },
+		{ value: 8, name: 'Github Dark (Dark)' },
+		{ value: 9, name: 'Gruvbox Light (Light)' },
+		{ value: 10, name: 'Material Light (Light)' },
+		{ value: 11, name: 'Material Dark (Dark)' },
+		{ value: 12, name: 'Monokai (Dark)' },
+		{ value: 13, name: 'Nord (Dark)' },
+		{ value: 14, name: 'Solarized Light (Light)' },
+		{ value: 15, name: 'Solarized Dark (Dark)' },
+		{ value: 16, name: 'Tokyo Night Storm (Dark)' },
+		{ value: 17, name: 'Tokyo Night Day (Light)' },
+		{ value: 18, name: 'Volcano (Dark)' }
 	];
 
 	let showSettings = false;
@@ -57,7 +68,11 @@
 						class="mx-2 size-12 p-2"
 						alt="snippeteer logo"
 					/>
-					<span class="font-secondary my-auto block font-light text-primary-950"> SNIPPETEER </span>
+					<span
+						class="font-secondary my-auto block font-light text-primary-950 dark:text-primary-500"
+					>
+						SNIPPETEER
+					</span>
 				</a>
 				<div class="sm:hidden">
 					<button
@@ -139,11 +154,11 @@
 						<DropdownDivider />
 						{#if loggedIn}
 							<DropdownItem>Profile</DropdownItem>
+							<!-- disabled -->
 							<DropdownItem
-								disabled
 								on:click={() => {
 									toast.info('Unavailable for now');
-									// (showSettings = !showSettings)
+									showSettings = !showSettings;
 								}}>Settings</DropdownItem
 							>
 							<DropdownDivider />
@@ -167,18 +182,85 @@
 			<Sheet.Title>Snippeteer Settings</Sheet.Title>
 			<Sheet.Description>Change settings across Snippeteer</Sheet.Description>
 		</Sheet.Header>
-		<div class="mx-auto mt-8">
+		<div class="mx-auto mt-8 space-y-4">
+			{#if $settings.editorTheme.useDefault}
+				<Label>
+					Editor Theme
+					<Select
+						on:change={(e) => {
+							$settings.editorTheme.default = e.target.value;
+						}}
+						class="mt-2"
+						items={themes}
+						bind:value={$settings.editorTheme.default}
+					/>
+				</Label>
+			{/if}
+
 			<Label>
-				Select an option
-				<Select
-					on:change={(e) => {
-						$settings.defaultLibs = e.target.value;
-					}}
-					class="mt-2"
-					items={themes}
-					bind:value={selectedTheme}
-				/>
+				Use same theme for all modes
+				<Switch id="useDefault" bind:checked={$settings.editorTheme.useDefault} />
 			</Label>
+
+			{#if !$settings.editorTheme.useDefault}
+				<Label>
+					Editor Theme (Light)
+					<Select
+						on:change={(e) => {
+							$settings.editorTheme.light = e.target.value;
+						}}
+						class="mt-2"
+						items={themes}
+						bind:value={$settings.editorTheme.light}
+					/>
+				</Label>
+
+				<Label>
+					Editor (Dark)
+					<Select
+						on:change={(e) => {
+							$settings.editorTheme.dark = e.target.value;
+						}}
+						class="mt-2"
+						items={themes}
+						bind:value={$settings.editorTheme.light}
+					/>
+				</Label>
+			{/if}
+			<Label>
+				Switch Site Theme
+				<ModeSwitcher />
+			</Label>
+
+			<p class="mb-4 font-semibold text-gray-900 dark:text-white">Select these Libraries</p>
+			<ul
+				class="w-48 divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800"
+			>
+				<li>
+					<Checkbox class="p-3" bind:checked={$settings.temp.libs.tailwind}>TailwindCSS</Checkbox>
+				</li>
+				<li>
+					<Checkbox class="p-3" bind:checked={$settings.temp.libs.bootstrap}>Bootstrap</Checkbox>
+				</li>
+				<li>
+					<Checkbox class="p-3" bind:checked={$settings.temp.libs.foundation}>Foundation</Checkbox>
+				</li>
+				<li>
+					<Checkbox class="p-3" bind:checked={$settings.temp.libs.css_skeletons}
+						>CSS Skeletons</Checkbox
+					>
+				</li>
+				<li><Checkbox class="p-3" bind:checked={$settings.temp.libs.bulma}>Bulma</Checkbox></li>
+
+				<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.7/dist/css-skeletons.min.css"/> -->
+			</ul>
+
+			<Label>
+				Add meta viewport to code preview automatically
+				<Checkbox class="p-3" bind:checked={$settings.metaTags.addViewport}
+					>Add Viewport Tag</Checkbox
+				></Label
+			>
 		</div>
 	</Sheet.Content>
 </Sheet.Root>

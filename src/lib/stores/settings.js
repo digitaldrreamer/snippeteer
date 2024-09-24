@@ -1,7 +1,13 @@
 import { persisted } from 'svelte-persisted-store'
 
 export const settings = persisted('settings', {
-    editorTheme: 'githubLight',
+    editorTheme: {
+        light: 0,
+        dark: 1,
+        default: 0,
+        useDefault: true
+    },
+    skipThemeChangeReminder: false,
     temp: {
         html: '',
         css: '',
@@ -17,5 +23,8 @@ export const settings = persisted('settings', {
     defaultLibs: {
         css: [],
         js: []
+    },
+    metaTags: {
+        addViewport: true
     }
 })

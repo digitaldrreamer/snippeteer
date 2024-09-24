@@ -6,20 +6,17 @@
 	import * as Menubar from '$lib/components/ui/menubar/index.js';
 	import { Kbd } from 'flowbite-svelte';
 	import { browser } from '$app/environment';
-
-	let bookmarks = false;
-	let fullUrls = true;
-
-	const profileRadioValue = 'benoit';
+	import { ModeWatcher } from 'mode-watcher';
 
 	afterNavigate(() => {
 		window.HSStaticMethods.autoInit();
 	});
 </script>
 
+<ModeWatcher />
 <Navbar />
 
-<Toaster richColors />
+<Toaster richColors closeButton />
 <div class="relative h-full w-full">
 	<slot />
 	{#if browser && window.location.pathname === '/snippets/new'}
@@ -41,7 +38,7 @@
 			<Menubar.Menu>
 				<Menubar.Trigger>Live Preview</Menubar.Trigger>
 				<Menubar.Content>
-					<Menubar.CheckboxItem bind:checked={bookmarks}>Reload</Menubar.CheckboxItem>
+					<Menubar.CheckboxItem>Reload</Menubar.CheckboxItem>
 					<Menubar.Item inset>
 						New tab <Menubar.Shortcut>⌘<Kbd>Alt</Kbd>O</Menubar.Shortcut>
 					</Menubar.Item>

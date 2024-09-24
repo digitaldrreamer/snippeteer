@@ -3,13 +3,14 @@
 	import Iframe from '$lib/components/Iframe.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { settings } from '$lib/stores/settings.js';
+	import { insertCssJsIntoHtml } from '$lib/utils/helpers.js';
 	import { Checkbox } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { persisted } from 'svelte-persisted-store';
 	// src="https://cdn.tailwindcss.com"
 	export let data;
 
-	let defaultTheme = 'githubLight';
+	let defaultTheme = 0;
 
 	$: tailwind_config = JSON.parse(tailwind_config_json);
 
@@ -89,57 +90,41 @@
 >`
 	};
 
-	function insertCssJsIntoHtml(htmlz, cssz, jsz) {
-		// update localstorage value
-		$settings.temp.html = html || '';
-		$settings.temp.css = css || '';
-		$settings.temp.js = js || '';
-		$settings.temp.libs.tailwind = selectedLibs.tailwind || false;
-		$settings.temp.libs.bootstrap = selectedLibs.bootstrap || false;
-		$settings.temp.libs.foundation = selectedLibs.foundation || false;
-		$settings.temp.libs.css_skeletons = selectedLibs.css_skeletons || false;
-		$settings.temp.libs.bulma = selectedLibs.bulma || false;
+	$: code = selectedLibs ? insertCssJsIntoHtml(html, css, js, selectedLibs, cdns).trim() : '';
 
-		// Create a style tag for CSS
-		const styleTag = `<style>${cssz}</style>`;
-
-		// Create a script tag for JS
-		const scriptTag = `<script>${jsz}<\/script>`;
-
-		// Inject the style and script tags into the HTML
-		// Assuming you want to inject the CSS inside the <head> and the JS at the end of <body>
-		let modifiedHtml = htmlz;
-
-		// Insert selected library CDNs into the head
-		const libraries = Object.entries(selectedLibs)
-			.filter(([lib, isSelected]) => isSelected) // Filter the selected libraries
-			.map(([lib]) => cdns[lib]) // Map the selected libraries to their CDN links
-			.join('\n'); // Join them into a single string
-
-		// Check if <head> tag exists to inject CDNs and CSS
-		if (modifiedHtml.includes('</head>')) {
-			modifiedHtml = modifiedHtml.replace('</head>', `${libraries}\n${styleTag}</head>`);
-		} else {
-			// If no <head>, just add the CDNs and style before the body
-			modifiedHtml = `${libraries}\n${styleTag}\n${modifiedHtml}`;
-		}
-
-		// Check if <body> tag exists to inject JS
-		if (modifiedHtml.includes('</body>')) {
-			modifiedHtml = modifiedHtml.replace('</body>', `${scriptTag}</body>`);
-		} else {
-			// If no <body>, append the script at the end
-			modifiedHtml += `\n${scriptTag}`;
-		}
-
-		return modifiedHtml;
-	}
-
-	$: code = selectedLibs ? insertCssJsIntoHtml(html, css, js).trim() : '';
-
-	let html = '';
-	let css = '';
-	let js = '';
+	let html = `
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	`;
+	let css = `
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	`;
+	let js = `
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	`;
 
 	/**
 	 * @type {{
@@ -167,7 +152,7 @@
 		selectedLibs.foundation = $settings.temp.libs.foundation || false;
 		selectedLibs.css_skeletons = $settings.temp.libs.css_skeletons || false;
 		selectedLibs.bulma = $settings.temp.libs.bulma || false;
-		defaultTheme = $settings.editorTheme || 'githubLight';
+		defaultTheme = $settings.editorTheme || 0;
 	});
 </script>
 
@@ -184,7 +169,7 @@
 			<Tabs.List
 				class="sticky top-0 z-10 grid w-full transition-all {selectedLibs.tailwind
 					? 'grid-cols-4'
-					: 'grid-cols-3'} space-x-3 bg-slate-200 text-neutral-900 dark:bg-slate-900"
+					: 'grid-cols-3'} space-x-3 bg-slate-200 text-neutral-900 dark:bg-slate-900 dark:text-neutral-400"
 			>
 				<Tabs.Trigger class="space-x-1 align-middle" value="html">
 					<span> HTML5 </span>
@@ -261,7 +246,7 @@
 		</ul>
 	</div>
 	<div
-		class="no-scrollbar block h-[60vh] w-full rounded-xl bg-neutral-100 p-4 shadow-md shadow-neutral-300 sm:col-span-1 sm:row-span-2 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
+		class="no-scrollbar box-border block h-[60vh] w-full overflow-scroll rounded-xl bg-neutral-100 shadow-md shadow-neutral-300 sm:col-span-1 sm:row-span-2 sm:h-auto dark:bg-neutral-800 dark:shadow-neutral-900"
 	>
 		<Iframe bind:htmlContent={code} />
 	</div>
