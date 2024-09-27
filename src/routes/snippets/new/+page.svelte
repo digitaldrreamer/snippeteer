@@ -7,6 +7,7 @@
 	import { Checkbox } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { persisted } from 'svelte-persisted-store';
+	import { mode } from 'mode-watcher';
 	// src="https://cdn.tailwindcss.com"
 	export let data;
 
@@ -152,7 +153,11 @@
 		selectedLibs.foundation = $settings.temp.libs.foundation || false;
 		selectedLibs.css_skeletons = $settings.temp.libs.css_skeletons || false;
 		selectedLibs.bulma = $settings.temp.libs.bulma || false;
-		defaultTheme = $settings.editorTheme || 0;
+		defaultTheme = $settings.editorTheme.useDefault
+			? $settings.editorTheme.default
+			: $mode === 'light'
+				? $settings.editorTheme.light
+				: $settings.editorTheme.dark || 0;
 	});
 </script>
 

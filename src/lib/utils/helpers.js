@@ -1,6 +1,10 @@
 import { browser } from '$app/environment';
 import Favicon from '$lib/images/favicon.png';
 import { settings } from '$lib/stores/settings';
+let addViewport;
+settings.subscribe((setting) => {
+    addViewport = setting.metaTags.addViewport
+})
 
 
 

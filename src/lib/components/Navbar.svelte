@@ -22,7 +22,8 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import ModeSwitcher from './ModeSwitcher.svelte';
-	let selectedTheme = $settings.editorTheme;
+	import { mode } from 'mode-watcher'
+	let selectedTheme = $settings.editorTheme.useDefault ? $settings.editorTheme.default : $mode === "light" ? $settings.editorTheme.light : $settings.editorTheme.dark;
 	let themes = [
 		{ value: 0, name: 'Basic Light (Light)' },
 		{ value: 1, name: 'Basic Dark (Dark)' },
@@ -53,7 +54,7 @@
 <!-- src="https://i.ibb.co.com/NSvggCj/android-chrome-192x192.png" -->
 <!-- ========== HEADER ========== -->
 <header
-	class="z-50 flex w-full flex-wrap bg-primary-100 py-3 text-sm text-neutral-900 sm:flex-nowrap sm:justify-start sm:py-0 dark:bg-neutral-800 dark:text-neutral-50"
+	class="z-50 flex flex-wrap w-full py-3 text-sm bg-primary-100 text-neutral-900 sm:flex-nowrap sm:justify-start sm:py-0 dark:bg-neutral-800 dark:text-neutral-50"
 >
 	<nav class="mx-auto w-full max-w-[85rem] px-4 md:px-6 lg:px-8">
 		<div class="relative sm:flex sm:items-center">
@@ -65,11 +66,11 @@
 				>
 					<img
 						src="https://i.ibb.co.com/NSvggCj/android-chrome-192x192.png"
-						class="mx-2 size-12 p-2"
+						class="p-2 mx-2 size-12"
 						alt="snippeteer logo"
 					/>
 					<span
-						class="font-secondary my-auto block font-light text-primary-950 dark:text-primary-500"
+						class="block my-auto font-light font-secondary text-primary-950 dark:text-primary-500"
 					>
 						SNIPPETEER
 					</span>
@@ -77,7 +78,7 @@
 				<div class="sm:hidden">
 					<button
 						type="button"
-						class="hs-collapse-toggle inline-flex items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white p-2 text-gray-800 shadow-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-700 dark:bg-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
+						class="inline-flex items-center justify-center p-2 text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm hs-collapse-toggle gap-x-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-700 dark:bg-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
 						id="hs-navbar-basic-usage-collapse"
 						aria-expanded="false"
 						aria-controls="hs-navbar-basic-usage"
@@ -120,11 +121,11 @@
 
 			<div
 				id="hs-navbar-basic-usage"
-				class="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 sm:block"
+				class="hidden overflow-hidden transition-all duration-300 hs-collapse grow basis-full sm:block"
 				aria-labelledby="hs-navbar-basic-usage-collapse"
 			>
 				<div
-					class="mt-5 flex flex-col gap-y-3 sm:mt-0 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:ps-5"
+					class="flex flex-col mt-5 gap-y-3 sm:mt-0 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:ps-5"
 				>
 					<a
 						class="font-medium text-gray-600 hover:text-gray-400 focus:text-gray-400 focus:outline-none sm:p-2 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500"
@@ -136,7 +137,7 @@
 						href="/snippets">Snippets</a
 					>
 
-					<Button class="my-2 ml-4 px-4 py-1">
+					<Button class="px-4 py-1 my-2 ml-4">
 						More
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +145,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="ms-2 h-6 w-6 text-white dark:text-white"
+							class="w-6 h-6 text-white ms-2 dark:text-white"
 						>
 							<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
 						</svg>
@@ -234,7 +235,7 @@
 
 			<p class="mb-4 font-semibold text-gray-900 dark:text-white">Select these Libraries</p>
 			<ul
-				class="w-48 divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800"
+				class="w-48 bg-white border border-gray-200 divide-y divide-gray-200 rounded-lg dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800"
 			>
 				<li>
 					<Checkbox class="p-3" bind:checked={$settings.temp.libs.tailwind}>TailwindCSS</Checkbox>
